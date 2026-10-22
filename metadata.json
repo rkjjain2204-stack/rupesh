@@ -1,0 +1,8 @@
+{
+  "name": "Jain Kirana Stores",
+  "description": "Authentic Indian neighbourhood kirana store and in-house handcrafted signature masalas, pure spices, and daily groceries.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

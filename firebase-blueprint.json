@@ -1,0 +1,158 @@
+{
+  "entities": {
+    "enquiry": {
+      "title": "Customer Enquiry",
+      "description": "Customer inquiries and orders for handcrafted masalas and store items",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Unique enquiry ID"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100,
+          "description": "Customer full name"
+        },
+        "phone": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 20,
+          "pattern": "^[0-9+\\-\\s()]+$",
+          "description": "Customer contact mobile number"
+        },
+        "email": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Optional customer email address"
+        },
+        "enquiryType": {
+          "type": "string",
+          "enum": ["signature-masala", "wholesale-bulk", "store-visit", "daily-grocery", "general"],
+          "description": "Category of customer enquiry"
+        },
+        "productInterest": {
+          "type": "string",
+          "maxLength": 120,
+          "description": "Product or spice of interest"
+        },
+        "packSize": {
+          "type": "string",
+          "maxLength": 50,
+          "description": "Preferred pack size"
+        },
+        "message": {
+          "type": "string",
+          "maxLength": 2000,
+          "description": "Detailed question, custom spice blend request, or quantity"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["New", "Contacted", "Resolved"],
+          "description": "Store workflow processing status"
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "Store counter staff internal notes"
+        },
+        "consentGiven": {
+          "type": "boolean",
+          "description": "User consent to receive phone/WhatsApp contact"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp in ISO format or server time"
+        }
+      },
+      "required": ["name", "phone", "enquiryType", "status", "createdAt"]
+    },
+    "order": {
+      "title": "Customer Order",
+      "description": "Store customer orders and counter walk-in records",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Unique order ID"
+        },
+        "orderNumber": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "Display order reference number"
+        },
+        "customerName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100,
+          "description": "Customer name"
+        },
+        "customerPhone": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 20,
+          "description": "Customer contact phone"
+        },
+        "customerAddress": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Delivery address in Durg/Bhilai"
+        },
+        "deliveryType": {
+          "type": "string",
+          "enum": ["counter-pickup", "local-delivery", "outstation"],
+          "description": "Pickup or delivery option"
+        },
+        "totalAmount": {
+          "type": "number",
+          "description": "Total order amount in INR"
+        },
+        "paymentMethod": {
+          "type": "string",
+          "enum": ["Cash", "UPI / GPay", "Pending"],
+          "description": "Chosen payment method"
+        },
+        "paymentStatus": {
+          "type": "string",
+          "enum": ["Paid", "Pending", "Due on Pickup"],
+          "description": "Payment clearing status"
+        },
+        "orderStatus": {
+          "type": "string",
+          "enum": ["New", "Packed", "Dispatched", "Delivered", "Cancelled"],
+          "description": "Current order lifecycle status"
+        },
+        "orderSource": {
+          "type": "string",
+          "enum": ["Website", "WhatsApp", "Counter Walk-In", "Phone"],
+          "description": "Channel from which order was received"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Order placement timestamp"
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "Store packing and delivery notes"
+        }
+      },
+      "required": ["customerName", "customerPhone", "orderStatus", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/enquiries/{enquiryId}": {
+      "schema": "enquiry",
+      "description": "Store customer enquiries collected from the website"
+    },
+    "/orders/{orderId}": {
+      "schema": "order",
+      "description": "Store customer orders and counter walk-in order ledger"
+    }
+  }
+}

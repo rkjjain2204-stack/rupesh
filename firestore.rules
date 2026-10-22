@@ -1,0 +1,111 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all access unless explicitly allowed below
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Hardened helper primitives
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Verified Store Owner / Admin check
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'rkj.jain2204@gmail.com' &&
+        request.auth.token.email_verified == true
+      );
+    }
+
+    // Health check document for connection verification on app initialization
+    match /test/connection {
+      allow read: if true;
+    }
+
+    // Customer Enquiry validation helper
+    function isValidEnquiry(data) {
+      return data.keys().hasAll(['name', 'phone', 'enquiryType', 'status', 'createdAt']) &&
+        data.keys().hasOnly(['id', 'name', 'phone', 'email', 'enquiryType', 'productInterest', 'packSize', 'message', 'status', 'notes', 'consentGiven', 'createdAt']) &&
+        data.name is string && data.name.size() >= 2 && data.name.size() <= 100 &&
+        data.phone is string && data.phone.size() >= 8 && data.phone.size() <= 20 &&
+        data.phone.matches('^[0-9+\\-\\s()]+$') &&
+        data.enquiryType is string && data.enquiryType in ['signature-masala', 'wholesale-bulk', 'store-visit', 'daily-grocery', 'general'] &&
+        data.status is string && data.status in ['New', 'Contacted', 'Resolved'] &&
+        data.createdAt is string && data.createdAt.size() <= 50 &&
+        (!('id' in data) || (data.id is string && data.id.size() <= 128)) &&
+        (!('email' in data) || (data.email is string && data.email.size() <= 100)) &&
+        (!('productInterest' in data) || (data.productInterest is string && data.productInterest.size() <= 120)) &&
+        (!('packSize' in data) || (data.packSize is string && data.packSize.size() <= 50)) &&
+        (!('message' in data) || (data.message is string && data.message.size() <= 2000)) &&
+        (!('notes' in data) || (data.notes is string && data.notes.size() <= 1000)) &&
+        (!('consentGiven' in data) || data.consentGiven is bool);
+    }
+
+    // Customer Order validation helper
+    function isValidOrder(data) {
+      return data.keys().hasAll(['customerName', 'customerPhone', 'orderStatus', 'createdAt']) &&
+        data.customerName is string && data.customerName.size() >= 2 && data.customerName.size() <= 100 &&
+        data.customerPhone is string && data.customerPhone.size() >= 8 && data.customerPhone.size() <= 20 &&
+        data.orderStatus is string && data.orderStatus in ['New', 'Packed', 'Dispatched', 'Delivered', 'Cancelled'] &&
+        data.createdAt is string && data.createdAt.size() <= 50 &&
+        (!('id' in data) || (data.id is string && data.id.size() <= 128)) &&
+        (!('orderNumber' in data) || (data.orderNumber is string && data.orderNumber.size() <= 64)) &&
+        (!('customerAddress' in data) || (data.customerAddress is string && data.customerAddress.size() <= 500)) &&
+        (!('deliveryType' in data) || (data.deliveryType is string && data.deliveryType in ['counter-pickup', 'local-delivery', 'outstation'])) &&
+        (!('totalAmount' in data) || data.totalAmount is number) &&
+        (!('paymentMethod' in data) || (data.paymentMethod is string && data.paymentMethod in ['Cash', 'UPI / GPay', 'Pending'])) &&
+        (!('paymentStatus' in data) || (data.paymentStatus is string && data.paymentStatus in ['Paid', 'Pending', 'Due on Pickup'])) &&
+        (!('orderSource' in data) || (data.orderSource is string && data.orderSource in ['Website', 'WhatsApp', 'Counter Walk-In', 'Phone'])) &&
+        (!('notes' in data) || (data.notes is string && data.notes.size() <= 1000)) &&
+        (!('items' in data) || (data.items is list && data.items.size() <= 50));
+    }
+
+    // Customer enquiries collection
+    match /enquiries/{enquiryId} {
+      allow create: if isValidId(enquiryId) &&
+                       isValidEnquiry(incoming()) &&
+                       incoming().status == 'New';
+
+      allow get, list: if isAdmin();
+
+      allow update: if isAdmin() &&
+                       isValidEnquiry(incoming()) &&
+                       incoming().name == existing().name &&
+                       incoming().phone == existing().phone &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly(['status', 'notes']);
+
+      allow delete: if isAdmin();
+    }
+
+    // Customer orders collection
+    match /orders/{orderId} {
+      allow create: if isValidId(orderId) &&
+                       isValidOrder(incoming()) &&
+                       (isAdmin() || incoming().orderStatus == 'New');
+
+      allow get, list: if isAdmin();
+
+      allow update: if isAdmin() &&
+                       isValidOrder(incoming()) &&
+                       incoming().createdAt == existing().createdAt;
+
+      allow delete: if isAdmin();
+    }
+  }
+}

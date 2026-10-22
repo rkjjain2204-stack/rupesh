@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-serif: 'Playfair Display', Georgia, serif;
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  body {
+    font-family: var(--font-sans);
+  }
+
+  h1, h2, h3, .font-serif {
+    font-family: var(--font-serif);
+  }
+}
+
+/* Subtle spice grain backdrop pattern */
+.bg-spice-pattern {
+  background-image: radial-gradient(rgba(212, 155, 40, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Custom smooth scroll */
+html {
+  scroll-behavior: smooth;
+}

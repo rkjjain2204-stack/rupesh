@@ -1,0 +1,41 @@
+[
+  {
+    "id": "ENQ-MVJA2PA0-769",
+    "name": "Rupesh Sharma",
+    "phone": "+919827112233",
+    "email": "test@example.com",
+    "enquiryType": "signature-masala",
+    "productInterest": "Special In-House Garam Masala",
+    "packSize": "250g",
+    "message": "Checking bulk festive pack availability in Durg",
+    "status": "Contacted",
+    "createdAt": "2026-10-22T08:27:22.104Z",
+    "notes": "Confirmed counter pickup at Dhimar Para store"
+  },
+  {
+    "id": "ENQ-MVIK7ZUT-394",
+    "name": "Sunil Sharma",
+    "phone": "9811223344",
+    "email": "",
+    "enquiryType": "signature-masala",
+    "productInterest": "Signature Garam Masala",
+    "packSize": "500g",
+    "message": "Need 500g fresh batch for pickup tomorrow",
+    "status": "Contacted",
+    "createdAt": "2026-10-21T20:23:39.077Z",
+    "notes": "Called customer, pickup confirmed for 4 PM"
+  },
+  {
+    "id": "ENQ-MVIJGRTY-480",
+    "name": "Sunil Jain",
+    "phone": "9811223344",
+    "email": "",
+    "enquiryType": "signature-masala",
+    "productInterest": "Special In-House Garam Masala",
+    "packSize": "250g",
+    "message": "Please confirm if 250g Garam Masala is freshly packed for store pickup today.",
+    "status": "New",
+    "createdAt": "2026-10-21T20:02:28.966Z",
+    "notes": ""
+  }
+]
